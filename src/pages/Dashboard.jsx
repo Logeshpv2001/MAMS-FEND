@@ -74,7 +74,7 @@ const Dashboard = () => {
 
   return (
     <div
-      className=" bg-gradient-to-br from-[#223322] to-[#445544] p-6 text-white h-full"
+      className="min-h-screen w-full bg-gradient-to-br from-[#223322] to-[#445544] p-6 text-white bg-cover bg-center"
       style={{
         backgroundImage: `url(${loftwall})`,
       }}
