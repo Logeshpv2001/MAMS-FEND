@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const axiosInstance = axios.create({
-  baseURL: "http://localhost:9999",
+  // baseURL: "http://localhost:9999",
 
-  // baseURL: "https://military-asset-management-system-av52.onrender.com",
+  baseURL: "https://military-asset-management-system-av52.onrender.com",
   withCredentials: true,
 });
 
