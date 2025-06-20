@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const BasesPage = () => {
   const { user } = useAuth();
@@ -25,15 +26,19 @@ const BasesPage = () => {
 
   const handleCreate = async () => {
     if (!newBase.name || !newBase.location) {
-      return setError("Name and Location are required");
+      setError("Name and Location are required");
+      toast.error("Name and Location are required");
+      return;
     }
 
     try {
       await axiosInstance.post("/base/create", newBase);
       setNewBase({ name: "", location: "" });
       fetchBases();
+      toast.success("Base created successfully!");
     } catch (err) {
       setError("Failed to create base.");
+      toast.error("Failed to create base.");
     }
   };
 
@@ -50,11 +55,12 @@ const BasesPage = () => {
       });
       setEditBase(null);
       fetchBases();
+      toast.success("Base updated successfully!");
     } catch (err) {
       setError("Failed to update base.");
+      toast.error("Failed to update base.");
     }
   };
-
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Manage Bases</h1>
