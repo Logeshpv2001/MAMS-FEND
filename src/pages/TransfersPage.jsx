@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 const TransfersPage = () => {
   const [transfers, setTransfers] = useState([]);
@@ -50,8 +52,10 @@ const TransfersPage = () => {
         date: "",
       });
       fetchTransfers();
+      toast.success("Asset transferred successfully!");
     } catch (err) {
       setError("Transfer failed. Make sure inputs are valid.");
+      toast.error("Transfer failed. Please check the inputs.");
     }
   };
 
@@ -166,7 +170,9 @@ const TransfersPage = () => {
                   <td className="border px-3 py-2">{fromBase?.name}</td>
                   <td className="border px-3 py-2">{toBase?.name}</td>
                   <td className="border px-3 py-2">{t.quantity}</td>
-                  <td className="border px-3 py-2">{t.date}</td>
+                  <td className="border px-3 py-2">
+                    {dayjs(t.date).format("DD-MM-YYYY")}
+                  </td>
                 </tr>
               );
             })}

@@ -2,11 +2,15 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { Modal, Button, Input, Select, message } from "antd";
+import ConfirmDialog from "../components/ConfirmDialog";
+import { toast } from "react-toastify";
 
 const { Option } = Select;
 
 const UsersPage = () => {
   const { user } = useAuth();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   const [users, setUsers] = useState([]);
   const [editingUserId, setEditingUserId] = useState(null);
@@ -68,19 +72,29 @@ const UsersPage = () => {
       await axiosInstance.put(`/user/edit-user/${id}`, editForm);
       setEditingUserId(null);
       fetchUsers();
-      message.success("User updated successfully");
+      toast.success("User updated successfully!");
     } catch (err) {
       setError("Failed to update user.");
+      toast.error("Failed to update user.");
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+  const handleDeleteClick = (id) => {
+    setSelectedUserId(id);
+    setConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
     try {
-      await axiosInstance.delete(`/user/${id}`);
+      await axiosInstance.delete(`/user/${selectedUserId}`);
       fetchUsers();
+      toast.success("User deleted successfully!");
     } catch (err) {
       setError("Failed to delete user.");
+      toast.error("Failed to delete user.");
+    } finally {
+      setConfirmOpen(false);
+      setSelectedUserId(null);
     }
   };
 
@@ -108,9 +122,9 @@ const UsersPage = () => {
       });
       setIsModalOpen(false);
       fetchUsers();
-      message.success("User created successfully");
+      toast.success("User created successfully!");
     } catch (err) {
-      message.error("Failed to create user.");
+      toast.error("Failed to create user.");
     }
   };
 
@@ -202,7 +216,7 @@ const UsersPage = () => {
                   ) : (
                     <Button onClick={() => handleEditClick(u)}>Edit</Button>
                   )}
-                  <Button danger onClick={() => handleDelete(u.id)}>
+                  <Button danger onClick={() => handleDeleteClick(u.id)}>
                     Delete
                   </Button>
                 </td>
@@ -262,6 +276,14 @@ const UsersPage = () => {
           </Select>
         </div>
       </Modal>
+
+      <ConfirmDialog
+        open={confirmOpen}
+        title="Confirm Deletion"
+        content="Are you sure you want to delete this user?"
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleDeleteConfirm}
+      />
     </div>
   );
 };

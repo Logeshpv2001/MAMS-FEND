@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import loftwall from "../assets/loft-wall.jpg";
 import logo from "../assets/logo.jpg";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const { login } = useAuth();
@@ -17,8 +18,10 @@ const LoginPage = () => {
     setError("");
     try {
       await login(email, password);
+      toast.success("Login successful!");
     } catch (err) {
-      setError("Invalid email or password. Please try again.");
+      setError("Invalid email or password.");
+      toast.error("Login failed. Please check your credentials.");
     }
   };
 

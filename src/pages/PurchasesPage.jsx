@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 const PurchasesPage = () => {
   const { user } = useAuth();
@@ -33,6 +35,7 @@ const PurchasesPage = () => {
     try {
       const res = await axiosInstance.get("/purchase/get");
       setPurchases(res.data);
+      console.log("purchase fetch", res.data);
     } catch (err) {
       setError("Failed to fetch purchases.");
     }
@@ -40,11 +43,13 @@ const PurchasesPage = () => {
 
   const fetchAssets = async () => {
     const res = await axiosInstance.get("/asset/get-all");
+    console.log("assessts fetch", res.data);
     setAssets(res.data);
   };
 
   const fetchBases = async () => {
     const res = await axiosInstance.get("/base/get-all-base");
+    console.log("base fetch", res.data);
     setBases(res.data);
   };
 
@@ -61,24 +66,36 @@ const PurchasesPage = () => {
               .replace("T", " ")
           : null,
       };
+
       console.log(payload);
       await axiosInstance.post("/purchase/create", payload);
       setNewPurchase({ asset_id: "", base_id: "", quantity: 0, date: "" });
       fetchPurchases();
+      toast.success("Purchase created successfully!");
     } catch (err) {
       setError("Failed to create purchase.");
+      toast.error("Failed to create purchase.");
     }
   };
 
   const filteredPurchases = purchases.filter((p) => {
-    const matchDate = filters.date ? p.date === filters.date : true;
+    const formattedDate = dayjs(p.date).format("YYYY-MM-DD");
+
+    const matchDate = filters.date ? formattedDate === filters.date : true;
+
     const matchBase = filters.base_id
       ? p.base_id === parseInt(filters.base_id)
       : true;
+
     const asset = assets.find((a) => a.id === p.asset_id);
+
     const matchType = filters.asset_type
-      ? asset?.type === filters.asset_type
+      ? asset?.type
+          ?.toLowerCase()
+          .trim()
+          .includes(filters.asset_type.toLowerCase().trim())
       : true;
+
     return matchDate && matchBase && matchType;
   });
 
@@ -209,7 +226,9 @@ const PurchasesPage = () => {
                 </td>
                 <td className="border px-3 py-2">{base?.name}</td>
                 <td className="border px-3 py-2">{p.quantity}</td>
-                <td className="border px-3 py-2">{p.date}</td>
+                <td className="border px-3 py-2">
+                  {dayjs(p.date).format("DD-MM-YYYY")}
+                </td>
               </tr>
             );
           })}

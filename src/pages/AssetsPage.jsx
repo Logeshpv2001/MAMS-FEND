@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 const AssetsPage = () => {
   const { user } = useAuth();
@@ -27,15 +28,19 @@ const AssetsPage = () => {
 
   const handleCreate = async () => {
     if (!newAsset.name || !newAsset.type || newAsset.total_qty <= 0) {
-      return setError("Please fill all fields correctly.");
+      setError("Please fill all fields correctly.");
+      toast.error("Please fill all fields correctly.");
+      return;
     }
 
     try {
       await axiosInstance.post("/asset/add", newAsset);
       setNewAsset({ name: "", type: "", total_qty: 0 });
       fetchAssets();
+      toast.success("Asset created successfully!");
     } catch (err) {
       setError("Failed to create asset.");
+      toast.error("Failed to create asset.");
     }
   };
 

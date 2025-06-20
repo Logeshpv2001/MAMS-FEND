@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { toast } from "react-toastify";
+import dayjs from "dayjs";
 
 const AssignmentsPage = () => {
   const [assignments, setAssignments] = useState([]);
@@ -27,6 +29,7 @@ const AssignmentsPage = () => {
     try {
       const res = await axiosInstance.get("/assignment");
       setAssignments(res.data);
+      console.log(res);
     } catch (err) {
       setError("Failed to fetch assignments.");
     }
@@ -54,8 +57,10 @@ const AssignmentsPage = () => {
         date: "",
       });
       fetchAssignments();
+      toast.success("Asset assigned successfully!");
     } catch (err) {
       setError("Failed to assign asset.");
+      toast.error("Failed to assign asset.");
     }
   };
 
@@ -63,8 +68,10 @@ const AssignmentsPage = () => {
     try {
       await axiosInstance.put(`/assignment/${id}/status`, { status });
       fetchAssignments();
+      toast.success(`Assignment status updated to "${status}"`);
     } catch (err) {
       setError("Failed to update assignment status.");
+      toast.error("Failed to update assignment status.");
     }
   };
 
@@ -170,7 +177,9 @@ const AssignmentsPage = () => {
                   <td className="border px-3 py-2">{a.personnel_name}</td>
                   <td className="border px-3 py-2">{base?.name}</td>
                   <td className="border px-3 py-2">{a.quantity}</td>
-                  <td className="border px-3 py-2">{a.date}</td>
+                  <td className="border px-3 py-2">
+                    {dayjs(a.date).format("DD-MM-YYYY")}
+                  </td>
                   <td className="border px-3 py-2">{a.status}</td>
                   <td className="border px-3 py-2">
                     <select
