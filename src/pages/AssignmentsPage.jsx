@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { toast } from "react-toastify";
 import dayjs from "dayjs";
+import formatDate from "../utils/format";
 
 const AssignmentsPage = () => {
   const [assignments, setAssignments] = useState([]);
@@ -177,9 +178,7 @@ const AssignmentsPage = () => {
                   <td className="border px-3 py-2">{a.personnel_name}</td>
                   <td className="border px-3 py-2">{base?.name}</td>
                   <td className="border px-3 py-2">{a.quantity}</td>
-                  <td className="border px-3 py-2">
-                    {dayjs(a.date).format("DD-MM-YYYY")}
-                  </td>
+                  <td className="border px-3 py-2">{formatDate(a.date)}</td>
                   <td className="border px-3 py-2">{a.status}</td>
                   <td className="border px-3 py-2">
                     <select
